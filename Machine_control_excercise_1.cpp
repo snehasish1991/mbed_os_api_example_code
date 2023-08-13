@@ -80,6 +80,7 @@ int32_t main() {
    // temperature_control = 0x01;
     fault_led_1 = 0x00;
     //i2c_setup(&i2c)
+    //check if initially guard switch is not engaged and temperature is within control
     if((guard_switch) || (temperature>=excess_temp)){
         ready_to_start_led = !ready_to_start_led;
         printf("Machine in not ready state\n");    
@@ -88,8 +89,11 @@ int32_t main() {
         //i2c_get_temp(&temp, &i2c);
         temperature = temp.readTemperature();
         //printf("current temp %3.2fC \n", temperature);
+        //check if stop button is pressed
         if(stop)
         {
+            //check machine status, whether it was started, but went into a reset either 
+            //due to rise in temperature or guard button was engaged
             if(machine_status) {
                 printf("Machine stopped\n");
                 machine_status = 0x00;
@@ -100,12 +104,17 @@ int32_t main() {
             running_state_led = 0x00;
             ready_to_start_led = !running_state_led;
         }
+        //check if machine can be started
         if((!guard_switch) && (temperature<excess_temp))
         {
             if(!machine_status) {
                 ready_to_start_led = 1;
             }
             fault_led_1 = fault_led_2 = 0;
+            //start button pressed and
+            //check machine status, whether it was started, but went into a reset either 
+            //due to rise in temperature or guard button was engaged
+            if(machine_status) {
             if(start || (machine_status && flag))
             {
                 printf("Machine started\n");
@@ -116,12 +125,14 @@ int32_t main() {
             }
             
         }
+        //action on engaging guard button
         if(guard_switch) {
             printf("Guard Switch engaged....machine stopped\n");
             fault_led_1 = !fault_led_1;
             flag = 0x01; 
             ready_to_start_led = running_state_led = 0x00;
         }
+        //action if temperature went beyond threshold
         if(temperature>=excess_temp) {
             printf("High temperature....machine stopped\n");
             fault_led_2 = !fault_led_2;
