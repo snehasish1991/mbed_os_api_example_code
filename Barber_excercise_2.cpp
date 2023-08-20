@@ -23,9 +23,12 @@
 #define Customer_child p17 
 #define fire_alarm p18
 
+
 int8_t adult_customer = 0x00, child_customer = 0x00, available_space = 8; 
 uint8_t seats_avail = 0xff;
 int8_t alarm_blown = 0x00;
+
+#define __SHOW_LOGS 0
 
 //Define outputs
 DigitalOut barber_1(RED_LED_B1);
@@ -53,20 +56,25 @@ InterruptIn fire(fire_alarm);
 void adult_customerFunc() {
     if(available_space>0) {
         adult_customer++;
-        printf("adult %d\n", adult_customer);
         available_space--;
         Seat = (uint8_t)(Seat>>1);
         //Seat = seats_avail;
-        printf("available %d\n", available_space);
+        if(__SHOW_LOGS) {
+            printf("adult %d\n", adult_customer);
+            printf("available %d\n", available_space);
+        }
     }
 }
 
 void child_customerFunc() {
-    if(available_space>0) {
+    //when a child frees his seat in waiting area and steps to barrber 3, but its parent is waiting, so only allow adult customers in that scenario
+    if((available_space>0)&&(!(available_space%2))) {
         child_customer+=1;
         available_space-=2;
-        printf("available %d\n", available_space);
-        printf("child %d\n", child_customer);
+        if(__SHOW_LOGS) {
+            printf("available %d\n", available_space);
+            printf("child %d\n", child_customer);
+        }
         Seat = (uint8_t)(Seat>>2);
     }
     
@@ -115,16 +123,19 @@ int32_t main(){
 	    if(available_space==0x00) {
 	        Fire_Alarm = 0x01;
 	    } 
-	    else {
+	    else if(!alarm_blown) {
 	        Fire_Alarm = 0x00;
+	    }
+	    if(alarm_blown) {
+	        continue;
 	    }
 	    if((!barber1_status) && (adult_customer>0x00)) {
 	        barber_1 = barber1_status = !barber1_status;        
 	        adult_customer--;
 	        available_space++;
 	        //seats_avail = seats_avail<<1;
-            Seat = (uint8_t)((Seat)|0x1);
-	        printf("available %d adult customer %d\n", available_space, adult_customer);
+            Seat = (uint8_t)((Seat<<1)|0x1);
+	        printf("available space in waiting area %d adult customer %d\n", available_space, adult_customer);
 	    }
 	    
 	    if((!barber2_status) && (adult_customer>0x00)) {
@@ -134,13 +145,16 @@ int32_t main(){
 	        Seat = (uint8_t)((Seat<<1)|0x1);
 	        //printf("seats available %x\n", Seat);
             //Seat = seats_avail;
-	        printf("available %d adult customer %d\n", available_space, adult_customer);
+            if(__SHOW_LOGS) 
+	            printf("available space in waiting area %d adult customer %d\n", available_space, adult_customer);
 	    }
 	    
 	    if((!barber3_status) && (child_customer>0x00)) {
 	        barber_3 = barber3_status = !barber3_status;        
 	        child_customer--;
 	        Seat = (uint8_t)((Seat<<1)|0x1);
+	        if(__SHOW_LOGS) 
+	            printf("available space in waiting area %d adult customer %d\n", available_space, child_customer);
 	    }
 	    
 	    if(barber1_status) {
@@ -172,6 +186,8 @@ int32_t main(){
 	            barber_3 = barber3_status = !barber3_status;
 	            available_space+=2;
 	            Seat = (uint8_t)((Seat<<1)|0x1);
+	            if(__SHOW_LOGS) 
+	                printf("available space in waiting area %d adult customer %d\n", available_space, child_customer);
 	            //printf("child seats available %x\n", Seat);
                 //Seat = seats_avail;
 	        }
@@ -179,7 +195,7 @@ int32_t main(){
 		wait_ms(1000);
 		Clock = !Clock;
 	}
-	printf("test\n");
+	printf("Bye Bye Sleep Tight!! :p\n");
 	return 0x00;
 }
 
