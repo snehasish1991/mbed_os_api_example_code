@@ -27,14 +27,32 @@ A waiting area in a barbershop has very limited space. There are three barbers, 
 Connection Diagram: https://github.com/snehasish1991/mbed_os_api_example_code/blob/main/Connection%20Diagrams/Barber_excercise2.PNG
 
 Button:
-Customer1: Adult customer
-Customer2: Child customer
-Fire: Fire alarm
+1. Customer1: Adult customer
+2. Customer2: Child customer
+3. Fire: Fire alarm
 
 LED:
-barber_1: LED to show barber 1 is engaged
-barber_2: LED to show barber 2 is engaged
-barber_3: LED to show barber 3 is engaged
-Fire_Alarm: LED to Show No Entry
-Clock: LED to show clock
-YELLOW_LED_1, YELLOW_LED_2, YELLOW_LED_3, YELLOW_LED_4, YELLOW_LED_5, YELLOW_LED_6, YELLOW_LED_7, YELLOW_LED_8: To show waiting area seat availabilty
+1. barber_1: LED to show barber 1 is engaged
+2. barber_2: LED to show barber 2 is engaged
+3. barber_3: LED to show barber 3 is engaged
+4. Fire_Alarm: LED to Show No Entry
+5. Clock: LED to show clock
+6. YELLOW_LED_1, YELLOW_LED_2, YELLOW_LED_3, YELLOW_LED_4, YELLOW_LED_5, YELLOW_LED_6, YELLOW_LED_7, YELLOW_LED_8: To show waiting area seat availabilty
+
+### Example 3
+You are developing the monitoring (but not control) system for a heating tank in an industrial process. There are two sensors in the tank, one for temperature and the other for level. Four output states must be detected, each triggering a different audible status tone: 
+
+Tank is full, temperature too high (upper third of temperature range) : two-tone  
+Tank is full, temperature is good (middle third of temperature range): steady continuous tone 
+Tank is full, temperature too low (lower third of temperature range): single beeping tone 
+Tank level is too low (tank less than three quarters full), any temperature: frequency-modulated “warble”  tone, flashing LED 
+Sensors must be tested at least once every two seconds. 
+
+Potentiometer
+1. Level: To indicate water level in tank
+2. Temp: Indicating the temperature
+
+Speaker:
+1. PWMOut Speaker: to play the tone as given in the question
+
+Connection Diagram: https://github.com/snehasish1991/mbed_os_api_example_code/blob/main/Connection%20Diagrams/Water_Tank_excercise_3.PNG
